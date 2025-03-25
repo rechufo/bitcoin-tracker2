@@ -35,47 +35,13 @@
   <canvas id="bitcoinChart" width="800" height="400"></canvas>
 
   <script>
-    // Setear fecha inicial fija: 1 de enero de 2025
     const startInput = document.getElementById("start");
     const endInput = document.getElementById("end");
 
+    // Setear fecha fija de inicio (1 de enero 2025)
     startInput.value = "2025-01-01";
-    endInput.valueAsDate = new Date();
 
-    const ctx = document.getElementById('bitcoinChart').getContext('2d');
-
-    // Crear imagen de Mario
-    const marioImg = new Image();
-    marioImg.src = "https://upload.wikimedia.org/wikipedia/en/9/99/MarioSMBW.png"; // Imagen de Mario
-
-    let chart;
-
-    async function cargarDatos() {
-      const startDate = startInput.value;
-      const endDate = endInput.value;
-
-      const fromTs = Math.floor(new Date(startDate).getTime() / 1000);
-      const toTs = Math.floor(new Date(endDate).getTime() / 1000);
-
-      const url = `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=usd&from=${fromTs}&to=${toTs}`;
-
-      const response = await fetch(url);
-      const data = await response.json();
-
-      const precios = data.prices;
-
-      const etiquetas = precios.map(p => {
-        const fecha = new Date(p[0]);
-        return fecha.toISOString().split("T")[0];
-      });
-
-      const valores = precios.map(p => p[1]);
-
-      if (chart) chart.destroy();
-
-      chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: etiquetas,
-          datasets: [{
-            label: 'Precio
+    // Setear fecha de fin automáticamente como hoy
+    const hoy = new Date();
+    const yyyy = hoy.getFullYear();
+    const mm =
