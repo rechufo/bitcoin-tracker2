@@ -56,7 +56,10 @@
       const startInput = document.getElementById("start");
       const endInput = document.getElementById("end");
 
+      // Fecha de inicio fija
       startInput.value = "2025-01-01";
+
+      // Fecha final automática: hoy
       const hoy = new Date();
       const yyyy = hoy.getFullYear();
       const mm = String(hoy.getMonth() + 1).padStart(2, '0');
@@ -66,8 +69,8 @@
       const ctx = document.getElementById('bitcoinChart').getContext('2d');
 
       const marioImg = new Image();
-      marioImg.src = "https://i.imgur.com/0Z8F5OM.png";
-      marioImg.crossOrigin = "anonymous";
+      marioImg.src = "https://i.imgur.com/0Z8F5OM.png"; // Imagen de Mario
+      marioImg.crossOrigin = "anonymous"; // Para evitar problemas de CORS
 
       let chart = null;
 
@@ -117,7 +120,7 @@
                 tension: 0.3,
                 fill: true,
                 pointRadius: function(context) {
-                  return (context.dataIndex === valores.length - 1) ? 6 : 4;
+                  return (context.dataIndex === valores.length - 1) ? 6 : 3;
                 },
                 pointStyle: function(context) {
                   return (context.dataIndex === valores.length - 1) ? marioImg : 'circle';
@@ -131,6 +134,9 @@
                 legend: {
                   labels: { color: "#fff", font: { size: 14 } }
                 }
+              },
+              layout: {
+                padding: 20
               },
               scales: {
                 x: {
