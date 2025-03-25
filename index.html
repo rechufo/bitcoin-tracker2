@@ -26,7 +26,7 @@
   <h1>Precio Histórico de Bitcoin (USD)</h1>
 
   <label for="start">Desde:</label>
-  <input type="date" id="start" value="2022-12-01">
+  <input type="date" id="start">
   <label for="end">Hasta:</label>
   <input type="date" id="end">
 
@@ -35,52 +35,24 @@
   <canvas id="bitcoinChart" width="800" height="400"></canvas>
 
   <script>
-    const ctx = document.getElementById('bitcoinChart').getContext('2d');
-    const chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: [],
-        datasets: [{
-          label: 'Precio de Bitcoin (USD)',
-          data: [],
-          borderColor: 'rgba(255, 205, 86, 1)',
-          backgroundColor: 'rgba(255, 205, 86, 0.2)',
-          tension: 0.3,
-          fill: true,
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          x: {
-            ticks: { color: "#fff" }
-          },
-          y: {
-            beginAtZero: false,
-            ticks: { color: "#fff" }
-          }
-        },
-        plugins: {
-          legend: {
-            labels: {
-              color: "#fff"
-            }
-          }
-        }
-      }
-    });
+    // Setear fecha inicial fija: 1 de enero de 2025
+    const startInput = document.getElementById("start");
+    const endInput = document.getElementById("end");
 
-    // Fecha por defecto "hasta hoy"
-    document.getElementById("end").valueAsDate = new Date();
+    startInput.value = "2025-01-01";
+    endInput.valueAsDate = new Date();
+
+    const ctx = document.getElementById('bitcoinChart').getContext('2d');
+
+    // Crear imagen de Mario
+    const marioImg = new Image();
+    marioImg.src = "https://upload.wikimedia.org/wikipedia/en/9/99/MarioSMBW.png"; // Imagen de Mario
+
+    let chart;
 
     async function cargarDatos() {
-      const startDate = document.getElementById("start").value;
-      const endDate = document.getElementById("end").value;
-
-      if (!startDate || !endDate) {
-        alert("Seleccioná ambas fechas");
-        return;
-      }
+      const startDate = startInput.value;
+      const endDate = endInput.value;
 
       const fromTs = Math.floor(new Date(startDate).getTime() / 1000);
       const toTs = Math.floor(new Date(endDate).getTime() / 1000);
@@ -94,18 +66,16 @@
 
       const etiquetas = precios.map(p => {
         const fecha = new Date(p[0]);
-        return fecha.toISOString().split("T")[0]; // Solo yyyy-mm-dd
+        return fecha.toISOString().split("T")[0];
       });
 
       const valores = precios.map(p => p[1]);
 
-      chart.data.labels = etiquetas;
-      chart.data.datasets[0].data = valores;
-      chart.update();
-    }
+      if (chart) chart.destroy();
 
-    // Opcional: cargar al iniciar
-    cargarDatos();
-  </script>
-</body>
-</html>
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: etiquetas,
+          datasets: [{
+            label: 'Precio
