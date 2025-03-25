@@ -56,10 +56,8 @@
       const startInput = document.getElementById("start");
       const endInput = document.getElementById("end");
 
-      // Fecha de inicio fija
       startInput.value = "2025-01-01";
 
-      // Fecha final automática: hoy
       const hoy = new Date();
       const yyyy = hoy.getFullYear();
       const mm = String(hoy.getMonth() + 1).padStart(2, '0');
@@ -67,11 +65,6 @@
       endInput.value = `${yyyy}-${mm}-${dd}`;
 
       const ctx = document.getElementById('bitcoinChart').getContext('2d');
-
-      const marioImg = new Image();
-      marioImg.src = "https://i.imgur.com/0Z8F5OM.png"; // Imagen de Mario
-      marioImg.crossOrigin = "anonymous"; // Para evitar problemas de CORS
-
       let chart = null;
 
       async function cargarDatos() {
@@ -106,10 +99,8 @@
           const etiquetas = precios.map(p => new Date(p[0]).toISOString().split("T")[0]);
           const valores = precios.map(p => p[1]);
 
-          // Calcular promedio
           const suma = valores.reduce((acc, val) => acc + val, 0);
           const promedio = suma / valores.length;
-
           const lineaPromedio = new Array(valores.length).fill(promedio);
 
           if (chart) chart.destroy();
@@ -126,33 +117,32 @@
                   backgroundColor: 'rgba(255, 205, 86, 0.2)',
                   tension: 0.3,
                   fill: true,
-                  pointRadius: function(context) {
-                    return (context.dataIndex === valores.length - 1) ? 6 : 3;
-                  },
-                  pointStyle: function(context) {
-                    return (context.dataIndex === valores.length - 1) ? marioImg : 'circle';
-                  }
+                  pointRadius: 3,
+                  pointStyle: 'circle',
+                  order: 2
                 },
                 {
                   label: `Promedio (${promedio.toFixed(2)} USD)`,
                   data: lineaPromedio,
                   borderColor: 'red',
                   borderDash: [5, 5],
+                  borderWidth: 2,
                   pointRadius: 0,
-                  fill: false
+                  fill: false,
+                  order: 1
                 }
               ]
             },
             options: {
               responsive: true,
               maintainAspectRatio: false,
+              layout: {
+                padding: 20
+              },
               plugins: {
                 legend: {
                   labels: { color: "#fff", font: { size: 14 } }
                 }
-              },
-              layout: {
-                padding: 20
               },
               scales: {
                 x: {
@@ -171,8 +161,8 @@
         }
       }
 
-      marioImg.onload = cargarDatos;
       window.cargarDatos = cargarDatos;
+      cargarDatos(); // Carga inicial
     };
   </script>
 </body>
