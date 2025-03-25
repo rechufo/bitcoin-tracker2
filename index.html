@@ -38,10 +38,104 @@
     const startInput = document.getElementById("start");
     const endInput = document.getElementById("end");
 
-    // Setear fecha fija de inicio (1 de enero 2025)
+    // Fecha fija de inicio
     startInput.value = "2025-01-01";
 
-    // Setear fecha de fin automáticamente como hoy
+    // Fecha final automática: hoy
     const hoy = new Date();
     const yyyy = hoy.getFullYear();
-    const mm =
+    const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+    const dd = String(hoy.getDate()).padStart(2, '0');
+    endInput.value = `${yyyy}-${mm}-${dd}`;
+
+    const ctx = document.getElementById('bitcoinChart').getContext('2d');
+
+    const marioImg = new Image();
+    marioImg.src = "https://upload.wikimedia.org/wikipedia/en/9/99/MarioSMBW.png";
+
+    let chart = null;
+
+    async function cargarDatos() {
+      const startDate = startInput.value;
+      const endDate = endInput.value;
+
+      if (!startDate || !endDate) {
+        alert("Seleccioná ambas fechas");
+        return;
+      }
+
+      const fromTs = Math.floor(new Date(startDate).getTime() / 1000);
+      const toTs = Math.floor(new Date(endDate).getTime() / 1000);
+
+      if (fromTs >= toTs) {
+        alert("La fecha de inicio debe ser anterior a la de fin.");
+        return;
+      }
+
+      const url = `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=usd&from=${fromTs}&to=${toTs}`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (!data.prices || data.prices.length === 0) {
+          alert("No hay datos disponibles para ese rango");
+          return;
+        }
+
+        const precios = data.prices;
+        const etiquetas = precios.map(p => new Date(p[0]).toISOString().split("T")[0]);
+        const valores = precios.map(p => p[1]);
+
+        if (chart) {
+          chart.destroy();
+        }
+
+        chart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: etiquetas,
+            datasets: [{
+              label: 'Precio de Bitcoin (USD)',
+              data: valores,
+              borderColor: 'rgba(255, 205, 86, 1)',
+              backgroundColor: 'rgba(255, 205, 86, 0.2)',
+              tension: 0.3,
+              fill: true,
+              pointRadius: function(context) {
+                return (context.dataIndex === valores.length - 1) ? 12 : 4;
+              },
+              pointStyle: function(context) {
+                return (context.dataIndex === valores.length - 1) ? marioImg : 'circle';
+              }
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: {
+                ticks: { color: "#fff" }
+              },
+              y: {
+                ticks: { color: "#fff" }
+              }
+            },
+            plugins: {
+              legend: {
+                labels: { color: "#fff" }
+              }
+            }
+          }
+        });
+
+      } catch (error) {
+        alert("Error al obtener datos. Verificá tu conexión o que la API esté activa.");
+        console.error(error);
+      }
+    }
+
+    // Cargar automáticamente al iniciar, cuando Mario ya esté cargado
+    marioImg.onload = cargarDatos;
+  </script>
+</body>
+</html>
