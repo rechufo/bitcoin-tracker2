@@ -51,8 +51,10 @@
 
       const ctx = document.getElementById('bitcoinChart').getContext('2d');
 
-      const marioImg = new Image();
-      marioImg.src = "https://upload.wikimedia.org/wikipedia/en/9/99/MarioSMBW.png";
+      const marioImg = new Image();    
+      marioImg.src = "https://rechufo.github.io/bitcoin-tracker2/mario.png"; // Asegúrate de que esta URL sea correcta
+      marioImg.crossOrigin = "anonymous"; // Importante para evitar problemas de CORS
+
 
       let chart = null;
 
